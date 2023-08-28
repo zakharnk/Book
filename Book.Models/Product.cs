@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Book.Models
 {
@@ -44,5 +45,11 @@ namespace Book.Models
         [Display(Name = "Price for 100+ books")]
        // [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true ,ErrorMessage = "Price for 100+ books must be between 1-1000")]
         public double PriceFor100 { get; set; }
+
+        public int CategoryId { get; set; }
+        [ForeignKey("CategoryId")]
+        public Category Category { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 }
