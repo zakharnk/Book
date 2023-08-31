@@ -19,7 +19,23 @@ namespace Book.DataAccess.Repository
 
         public void Update(Product product)
         {
-            _db.Products.Update(product);
+            var objFromDb = _db.Products.FirstOrDefault(u => u.Id == product.Id);
+            if(objFromDb != null)
+            {
+                objFromDb.Title = product.Title;
+                objFromDb.Description = product.Description;
+                objFromDb.ISBN = product.ISBN;
+                objFromDb.Price = product.Price;
+                objFromDb.ListPrice= product.ListPrice;
+                objFromDb.PriceFor50= product.PriceFor50;
+                objFromDb.PriceFor100= product.PriceFor100;
+                objFromDb.CategoryId= product.CategoryId;
+                objFromDb.Author= product.Author;
+                if(objFromDb.ImageUrl !=null)
+                {
+                    objFromDb.ImageUrl = product.ImageUrl;
+                }
+            }
         }
     }
 }

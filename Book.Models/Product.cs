@@ -24,27 +24,26 @@ namespace Book.Models
         public string Author { get; set; }
 
         [Required]
-        public string ISBN { get; set;}
+        public string ISBN { get; set; }
 
         [Required]
         [Display(Name = "List Price")]
-        [DisplayFormat(DataFormatString = "{0:N}", ApplyFormatInEditMode = true)]
-        //[Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 50+ books must be between 1-1000")]
+        [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 50+ books must be between 1-1000")]
         public double ListPrice { get; set; }
 
         [Required]
         [Display(Name = "Price for 1-50")]
-        //[Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 1-50 books must be between 1-1000")]
+        [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 1-50 books must be between 1-1000")]
         public double Price { get; set; }
 
         [Required]
         [Display(Name = "Price for 50+ books")]
-       // [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 50+ books must be between 1-1000")]
+        [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 50+ books must be between 1-1000")]
         public double PriceFor50 { get; set; }
 
         [Required]
         [Display(Name = "Price for 100+ books")]
-       // [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true ,ErrorMessage = "Price for 100+ books must be between 1-1000")]
+        [Range(1.0, 1000.0, ConvertValueInInvariantCulture = true, ErrorMessage = "Price for 100+ books must be between 1-1000")]
         public double PriceFor100 { get; set; }
 
         public int CategoryId { get; set; }
