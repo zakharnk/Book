@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Authorize(Roles = Constants.Role_Admin)]
+    [Authorize(Roles = Constants.Role_Admin)]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
