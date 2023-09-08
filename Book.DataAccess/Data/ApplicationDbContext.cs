@@ -13,6 +13,7 @@ namespace Book.DataAccess.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +22,32 @@ namespace Book.DataAccess.Data
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "History", DisplayOrder = 3 });
+
+            modelBuilder.Entity<Company>().HasData(
+               new Company { Id = 1, 
+                   Name = "Microsoft", 
+                   StreetAddress = "15 Microsoft st", 
+                   City = "New York", 
+                   State = "NY", 
+                   PostalCode = "223232", 
+                   PhoneNumber = "5647651230" },
+               new Company 
+               { 
+                   Id = 2, 
+                   Name = "LinkedIn", 
+                   StreetAddress = "123 Tech st", 
+                   City = "Chicago", 
+                   State = "IL", 
+                   PostalCode = "124312", 
+                   PhoneNumber = "1234567000" 
+               },
+               new Company { Id = 3, 
+                   Name = "Apple", 
+                   StreetAddress = "7 Garden st", 
+                   City = "Los Angeles", 
+                   State = "CA", 
+                   PostalCode = "124366", 
+                   PhoneNumber = "6549980931" });
 
             modelBuilder.Entity<Product>().HasData(
                 new Product
@@ -34,8 +61,8 @@ namespace Book.DataAccess.Data
                     Price = 20,
                     PriceFor50 = 18,
                     PriceFor100 = 15,
-                    CategoryId=1,
-                    ImageUrl=""
+                    CategoryId = 1,
+                    ImageUrl = ""
                 },
 
                 new Product
@@ -49,7 +76,7 @@ namespace Book.DataAccess.Data
                     Price = 5,
                     PriceFor50 = 4,
                     PriceFor100 = 3,
-                    CategoryId=1,
+                    CategoryId = 1,
                     ImageUrl = ""
                 },
 
@@ -64,7 +91,7 @@ namespace Book.DataAccess.Data
                     Price = 6,
                     PriceFor50 = 5,
                     PriceFor100 = 4,
-                    CategoryId=3,
+                    CategoryId = 3,
                     ImageUrl = ""
                 },
 
@@ -79,7 +106,7 @@ namespace Book.DataAccess.Data
                      Price = 13,
                      PriceFor50 = 12,
                      PriceFor100 = 11,
-                     CategoryId=1,
+                     CategoryId = 1,
                      ImageUrl = ""
                  },
 
@@ -94,7 +121,7 @@ namespace Book.DataAccess.Data
                       Price = 21,
                       PriceFor50 = 20,
                       PriceFor100 = 18,
-                      CategoryId=2,
+                      CategoryId = 2,
                       ImageUrl = ""
                   },
 
@@ -109,7 +136,7 @@ namespace Book.DataAccess.Data
                       Price = 12,
                       PriceFor50 = 11,
                       PriceFor100 = 10,
-                      CategoryId=1,
+                      CategoryId = 1,
                       ImageUrl = ""
                   });
         }

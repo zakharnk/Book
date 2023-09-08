@@ -4,6 +4,7 @@ using Book.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Book.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230907195254_AddCompanyTable")]
+    partial class AddCompanyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,38 +96,6 @@ namespace Book.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            City = "New York",
-                            Name = "Microsoft",
-                            PhoneNumber = "5647651230",
-                            PostalCode = "223232",
-                            State = "NY",
-                            StreetAddress = "15 Microsoft st"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = "Chicago",
-                            Name = "LinkedIn",
-                            PhoneNumber = "1234567000",
-                            PostalCode = "124312",
-                            State = "IL",
-                            StreetAddress = "123 Tech st"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Los Angeles",
-                            Name = "Apple",
-                            PhoneNumber = "6549980931",
-                            PostalCode = "124366",
-                            State = "CA",
-                            StreetAddress = "7 Garden st"
-                        });
                 });
 
             modelBuilder.Entity("Book.Models.Product", b =>
@@ -477,10 +448,6 @@ namespace Book.DataAccess.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -493,8 +460,6 @@ namespace Book.DataAccess.Migrations
 
                     b.Property<string>("StreetAddress")
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasDiscriminator().HasValue("AppUser");
                 });
@@ -559,17 +524,6 @@ namespace Book.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Book.Models.AppUser", b =>
-                {
-                    b.HasOne("Book.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Book.DataAccess.Repository.IRepository;
 using Book.Models;
 using Book.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -34,6 +35,7 @@ namespace BookWeb.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<AppUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IUnitOfWork _unitOfWork;
 
         public RegisterModel(
             UserManager<AppUser> userManager,
@@ -41,7 +43,8 @@ namespace BookWeb.Areas.Identity.Pages.Account
             IUserStore<AppUser> userStore,
             SignInManager<AppUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -50,6 +53,7 @@ namespace BookWeb.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -107,7 +111,7 @@ namespace BookWeb.Areas.Identity.Pages.Account
 
             public string? Role { get; set; }
             [ValidateNever]
-            public IEnumerable<SelectListItem> Roles { get; set; }
+            public IEnumerable<SelectListItem> RoleList { get; set; }
             [Required]
             public string Name { get; set; }
             public string? StreetAddress { get; set; }
@@ -115,7 +119,9 @@ namespace BookWeb.Areas.Identity.Pages.Account
             public string? State { get; set; }
             public string? PostalCode { get; set; }
             public string? PhoneNumber { get; set; }
-
+            public int? CompanyId { get; set; }
+            [ValidateNever]
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
         }
 
 
@@ -130,9 +136,13 @@ namespace BookWeb.Areas.Identity.Pages.Account
             }
             Input = new()
             {
-                Roles = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem {
+                RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem {
                     Text = i,
                     Value = i
+                }),
+                CompanyList = _unitOfWork.Company.GetAll().Select(i => new SelectListItem {
+                Text=i.Name,
+                Value=i.Id.ToString()
                 })
             };
             ReturnUrl = returnUrl;
@@ -155,6 +165,12 @@ namespace BookWeb.Areas.Identity.Pages.Account
                 user.State= Input.State;
                 user.PostalCode= Input.PostalCode;
                 user.PhoneNumber= Input.PhoneNumber;
+
+                if (Input.Role == Constants.Role_Company)
+                {
+                    user.CompanyId= Input.CompanyId;
+                }
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
