@@ -1,7 +1,9 @@
 using Book.DataAccess.Repository.IRepository;
 using Book.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BookWeb.Areas.Customer.Controllers
 {
@@ -24,8 +26,40 @@ namespace BookWeb.Areas.Customer.Controllers
         }
         public IActionResult Details(int id)
         {
-            Product product = _unitOfWork.Product.Get(u=>u.Id==id, includeProperties: "Category");
-            return View(product);
+            ShoppingCart shoppingCart = new()
+            {
+                Product = _unitOfWork.Product.Get(u => u.Id == id, includeProperties: "Category"),
+                Count = 1,
+                ProductId = id
+            };
+            return View(shoppingCart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.AppUserId = userId;
+
+            ShoppingCart cartFromDB = _unitOfWork.ShoppingCart.Get(u => u.AppUserId == userId && u.ProductId == shoppingCart.ProductId);
+            if (cartFromDB != null)
+            {
+                //add count to existing cart
+                cartFromDB.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDB);
+            }
+            else
+            {
+                //add cart to DB
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            }
+            TempData["success"] = "Cart updated successfully";
+
+            _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()
