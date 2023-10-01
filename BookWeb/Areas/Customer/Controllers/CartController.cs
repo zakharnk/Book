@@ -76,13 +76,19 @@ namespace BookWeb.Areas.Customer.Controllers
         [ActionName("Summary")]
         public IActionResult SummaryPost()
         {
+
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.AppUserId == userId,
                 includeProperties: "Product");
 
-            ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
+            if (!ModelState.IsValid)
+            {
+                return View(ShoppingCartVM);
+            }
+
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.AppUserId = userId;
 
             AppUser appUser = _unitOfWork.AppUser.Get(u => u.Id == userId);
@@ -123,26 +129,28 @@ namespace BookWeb.Areas.Customer.Controllers
 
             if (appUser.CompanyId.GetValueOrDefault() == 0)
             {
-                var domain = "https://localhost:44345/";
+                //stripe logic
+                var domain = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/";
                 var options = new SessionCreateOptions
                 {
-                    SuccessUrl = domain+ $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.OrderHeaderId}",
-                    CancelUrl = domain+"customer/cart/index",
+                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.OrderHeaderId}",
+                    CancelUrl = domain + "customer/cart/index",
                     LineItems = new List<SessionLineItemOptions>(),
                     Mode = "payment",
                 };
 
-                foreach(var item in ShoppingCartVM.ShoppingCartList)
+                foreach (var item in ShoppingCartVM.ShoppingCartList)
                 {
                     var sessionLineItem = new SessionLineItemOptions
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            UnitAmount = (long)(item.Price*100),
-                            Currency="usd",
+                            UnitAmount = (long)(item.Price * 100),
+                            Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = item.Product.Title
+                                Name = item.Product.Title,
+
                             }
                         },
                         Quantity = item.Count
@@ -165,7 +173,7 @@ namespace BookWeb.Areas.Customer.Controllers
         public IActionResult OrderConfirmation(int id)
         {
             OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(u => u.OrderHeaderId == id, includeProperties: "AppUser");
-            if(orderHeader.PaymentStatus!= Constants.PaymentStatusDelayedPayment)
+            if (orderHeader.PaymentStatus != Constants.PaymentStatusDelayedPayment)
             {
                 //customer order with payment
                 var service = new SessionService();

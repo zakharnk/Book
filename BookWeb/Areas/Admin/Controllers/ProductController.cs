@@ -11,7 +11,6 @@ namespace BookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = Constants.Role_Admin)]
-
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
