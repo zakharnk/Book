@@ -49,7 +49,8 @@ namespace Book.DataAccess.Repository
         public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties=null)
         {
             IQueryable<T> query = Set;
-            if(filter != null)
+           
+            if (filter != null)
             {
                 query = query.Where(filter);
             }

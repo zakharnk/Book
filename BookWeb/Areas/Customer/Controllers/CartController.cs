@@ -203,10 +203,12 @@ namespace BookWeb.Areas.Customer.Controllers
         }
         public IActionResult Decrement(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ShoppingCartId == cartId);
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ShoppingCartId == cartId, isTracked: true);
             if (cartFromDb.Count <= 1)
             {
                 //remove cart if 0
+                HttpContext.Session.SetInt32(Constants.SessionCart, _unitOfWork.ShoppingCart
+                    .GetAll(u => u.AppUserId == cartFromDb.AppUserId).Count() - 1);
                 _unitOfWork.ShoppingCart.Remove(cartFromDb);
             }
             else
@@ -220,7 +222,9 @@ namespace BookWeb.Areas.Customer.Controllers
 
         public IActionResult Remove(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ShoppingCartId == cartId);
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ShoppingCartId == cartId, isTracked:true);
+            HttpContext.Session.SetInt32(Constants.SessionCart, _unitOfWork.ShoppingCart
+                 .GetAll(u => u.AppUserId == cartFromDb.AppUserId).Count() - 1);
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
