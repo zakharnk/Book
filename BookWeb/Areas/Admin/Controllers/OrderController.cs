@@ -89,7 +89,7 @@ namespace BookWeb.Areas.Admin.Controllers
             orderHeaderFromDb.OderShipped = DateTime.Now;
             if (orderHeaderFromDb.PaymentStatus == Constants.PaymentStatusDelayedPayment)
             {
-                orderHeaderFromDb.PaymentDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+                orderHeaderFromDb.PaymentDueDate = DateTime.Now.AddDays(30);
             }
             _unitOfWork.OrderHeader.Update(orderHeaderFromDb);
             _unitOfWork.Save();
