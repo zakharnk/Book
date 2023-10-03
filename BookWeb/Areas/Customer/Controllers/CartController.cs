@@ -3,6 +3,7 @@ using Book.Models;
 using Book.Models.ViewModels;
 using Book.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using System.Reflection.Metadata;
@@ -15,11 +16,13 @@ namespace BookWeb.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailSender _emailSender;
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
-        public CartController(IUnitOfWork unitOfWork)
+        public CartController(IUnitOfWork unitOfWork, IEmailSender emailSender)
         {
             _unitOfWork = unitOfWork;
+            _emailSender = emailSender;
         }
 
         public IActionResult Index()
@@ -88,8 +91,9 @@ namespace BookWeb.Areas.Customer.Controllers
                 return View(ShoppingCartVM);
             }
 
-            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.AppUserId = userId;
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+
 
             AppUser appUser = _unitOfWork.AppUser.Get(u => u.Id == userId);
 
@@ -187,6 +191,10 @@ namespace BookWeb.Areas.Customer.Controllers
                 }
                 HttpContext.Session.Clear();
             }
+
+            _emailSender.SendEmailAsync(orderHeader.AppUser.Email, "New order - Book Store",
+                $"<p>New order was created - {orderHeader.OrderHeaderId}</p>");
+
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
                 .GetAll(u => u.AppUserId == orderHeader.AppUserId).ToList();
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
@@ -223,7 +231,7 @@ namespace BookWeb.Areas.Customer.Controllers
 
         public IActionResult Remove(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ShoppingCartId == cartId, isTracked:true);
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ShoppingCartId == cartId, isTracked: true);
             HttpContext.Session.SetInt32(Constants.SessionCart, _unitOfWork.ShoppingCart
                  .GetAll(u => u.AppUserId == cartFromDb.AppUserId).Count() - 1);
             _unitOfWork.ShoppingCart.Remove(cartFromDb);

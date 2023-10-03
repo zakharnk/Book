@@ -12,6 +12,7 @@ namespace Book.Models
     public class OrderHeader
     {
         public int OrderHeaderId { get; set; }
+        [ValidateNever]
         public string AppUserId { get; set; }
         [ForeignKey(nameof(AppUserId))]
         [ValidateNever]
