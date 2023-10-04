@@ -16,5 +16,9 @@ namespace Book.DataAccess.Repository
         {
             _db = db;
         }
+        public void Update(AppUser appUser)
+        {
+            _db.AppUsers.Update(appUser);
+        }
     }
 }
