@@ -32,6 +32,18 @@ builder.Services.AddAuthentication().AddFacebook(option =>
     option.AppSecret = "e84a4839890ff795a90178b30172e1c8";
 });
 
+builder.Services.AddAuthentication().AddMicrosoftAccount(option =>
+{
+    option.ClientId = "49ed0ede-18cc-477c-8446-7e9ef7dfaa4d";
+    option.ClientSecret = "oBV8Q~W0qutlTEqrfBNrvbX~y4ESwAlcN3cJ5a9q";
+});
+
+builder.Services.AddAuthentication().AddGoogle(option =>
+{
+    option.ClientId = "410440950617-f3d97fl3luln4ejfhf6n4qfrhrea82fs.apps.googleusercontent.com";
+    option.ClientSecret = "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";
+});
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
