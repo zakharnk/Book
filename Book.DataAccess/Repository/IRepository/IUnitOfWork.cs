@@ -15,6 +15,7 @@ namespace Book.DataAccess.Repository.IRepository
         IAppUserRepository AppUser { get; }
         IOrderDetailRepository OrderDetail { get; }
         IOrderHeaderRepository OrderHeader { get; }
+        IRoleRepository Role { get; }
         void Save();
     }
 }

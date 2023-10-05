@@ -1,9 +1,12 @@
 ﻿using Book.DataAccess.Repository.IRepository;
 using Book.Models;
+using Book.Models.ViewModels;
 using Book.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Stripe;
 
 namespace BookWeb.Areas.Admin.Controllers
 {
@@ -24,16 +27,77 @@ namespace BookWeb.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult RoleManagement(string userId)
+        {
+            UserRoleVM userRoleVM = new()
+            {
+                AppUser = _unitOfWork.AppUser.Get(u => u.Id == userId, includeProperties:"Company"),
+                RoleId = _unitOfWork.AppUser.GetUserRole(userId).Id,
+                RoleList = _unitOfWork.Role.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }),
+                CompanyList = _unitOfWork.Company.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }),
+
+            };
+            userRoleVM.AppUser.Role = _unitOfWork.Role.Get(u => u.Id == userRoleVM.RoleId).ToString();
+            return View(userRoleVM);
+        }
+
+        [HttpPost]
+        public IActionResult RoleManagement(UserRoleVM userRoleVM)
+        {
+
+            if (ModelState.IsValid)
+            {
+                _unitOfWork.AppUser.UpdateUserRole(userRoleVM.AppUser.Id, userRoleVM.RoleId);
+                string? roleName = _unitOfWork.Role.Get(u => u.Id == userRoleVM.RoleId).Name;
+                var appUser = _unitOfWork.AppUser.Get(u => u.Id == userRoleVM.AppUser.Id);
+                if (roleName == Constants.Role_Company)
+                {
+                    appUser.CompanyId = userRoleVM.AppUser.CompanyId;                    
+                }
+                else
+                {
+                    appUser.CompanyId = null;
+                }
+
+                _unitOfWork.AppUser.Update(appUser);
+                _unitOfWork.Save();
+                TempData["success"] = "User role updated successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                userRoleVM.RoleList = _unitOfWork.Role.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                });
+                userRoleVM.CompanyList = _unitOfWork.Company.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                });
+                return View(userRoleVM);
+            }
+        }
+
 
 
         #region API CALLS
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
             List<AppUser> appUserList = _unitOfWork.AppUser.GetAll(includeProperties: "Company").ToList();
-            foreach (var item in appUserList)
+            foreach (var appUser in appUserList)
             {
-                item.Role = (await userManager.GetRolesAsync(item)).First();
+                appUser.Role = _unitOfWork.AppUser.GetUserRole(appUser.Id).Name;
             }
 
             return Json(new { data = appUserList });
