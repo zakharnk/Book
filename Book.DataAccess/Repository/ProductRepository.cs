@@ -31,10 +31,7 @@ namespace Book.DataAccess.Repository
                 objFromDb.PriceFor100= product.PriceFor100;
                 objFromDb.CategoryId= product.CategoryId;
                 objFromDb.Author= product.Author;
-                if(objFromDb.ImageUrl !=null)
-                {
-                    objFromDb.ImageUrl = product.ImageUrl;
-                }
+                objFromDb.ProductImages= product.ProductImages;
             }
         }
     }

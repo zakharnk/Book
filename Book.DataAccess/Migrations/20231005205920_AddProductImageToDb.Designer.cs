@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Book.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230926165606_AddSessionIdToOrderHeader")]
-    partial class AddSessionIdToOrderHeader
+    [Migration("20231005205920_AddProductImageToDb")]
+    partial class AddProductImageToDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-preview.7.23375.4")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -197,8 +197,8 @@ namespace Book.DataAccess.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly>("PaymentDueDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("PaymentDueDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("nvarchar(max)");
@@ -258,10 +258,6 @@ namespace Book.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("ListPrice")
                         .HasColumnType("float");
 
@@ -292,7 +288,6 @@ namespace Book.DataAccess.Migrations
                             CategoryId = 1,
                             Description = "Stephen King’s terrifying, classic #1 New York Times bestseller, “a landmark in American literature” (Chicago Sun-Times)—about seven adults who return to their hometown to confront a nightmare they had first stumbled on as teenagers…an evil without a name: It.",
                             ISBN = "978-1982127794",
-                            ImageUrl = "",
                             ListPrice = 21.0,
                             Price = 20.0,
                             PriceFor100 = 15.0,
@@ -306,7 +301,6 @@ namespace Book.DataAccess.Migrations
                             CategoryId = 1,
                             Description = "The Great Gatsby is considered F. Scott Fitzgerald’s magnum opus, exploring themes of decadence, idealism, social stigmas, patriarchal norms, and the deleterious effects of unencumbered wealth in capitalistic society, set against the backdrop of the Jazz Age and the Roaring Twenties. At its heart, it’s a cautionary tale, a revealing look into the darker side to the American Dream.",
                             ISBN = "979-8351145013",
-                            ImageUrl = "",
                             ListPrice = 6.0,
                             Price = 5.0,
                             PriceFor100 = 3.0,
@@ -320,7 +314,6 @@ namespace Book.DataAccess.Migrations
                             CategoryId = 3,
                             Description = "Hamlet is a tragedy written by William Shakespeare sometime between 1599 and 1601. Set in Denmark, the play depicts Prince Hamlet and his revenge against his uncle, Claudius, who has murdered Hamlet's father in order to seize his throne and marry Hamlet's mother.",
                             ISBN = "979-8630242716",
-                            ImageUrl = "",
                             ListPrice = 7.0,
                             Price = 6.0,
                             PriceFor100 = 4.0,
@@ -334,7 +327,6 @@ namespace Book.DataAccess.Migrations
                             CategoryId = 1,
                             Description = "One of the world’s greatest novels, Crime and Punishment is the story of a murder and its consequences—an unparalleled tale of suspense set in the midst of nineteenth-century Russia’s troubled transition to the modern age. ",
                             ISBN = "979-8630242716",
-                            ImageUrl = "",
                             ListPrice = 14.0,
                             Price = 13.0,
                             PriceFor100 = 11.0,
@@ -348,7 +340,6 @@ namespace Book.DataAccess.Migrations
                             CategoryId = 2,
                             Description = "In The Hobbit, Bilbo Baggins enjoys a comfortable, unambitious life, rarely traveling farther than the pantry of his hobbit-hole in Bag End. But his contentment is disturbed when the wizard Gandalf and a company of thirteen dwarves arrive on his doorstep to whisk him away on a journey to raid the treasure hoard of Smaug the Magnificent, a large and very dangerous dragon....",
                             ISBN = "978-0544174221",
-                            ImageUrl = "",
                             ListPrice = 22.0,
                             Price = 21.0,
                             PriceFor100 = 18.0,
@@ -362,13 +353,34 @@ namespace Book.DataAccess.Migrations
                             CategoryId = 1,
                             Description = "The book is sailor Ishmael's narrative of the obsessive quest of Ahab, captain of the whaling ship Pequod, for revenge on Moby Dick, the giant white sperm whale that on the ship's previous voyage bit off Ahab's leg at the knee.",
                             ISBN = "979-8612823810",
-                            ImageUrl = "",
                             ListPrice = 13.0,
                             Price = 12.0,
                             PriceFor100 = 10.0,
                             PriceFor50 = 11.0,
                             Title = "Moby Dick"
                         });
+                });
+
+            modelBuilder.Entity("Book.Models.ProductImage", b =>
+                {
+                    b.Property<int>("productImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("productImageId"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("productImageId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("Book.Models.ShoppingCart", b =>
@@ -464,8 +476,7 @@ namespace Book.DataAccess.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -613,7 +624,6 @@ namespace Book.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CompanyId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -673,6 +683,17 @@ namespace Book.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Book.Models.ProductImage", b =>
+                {
+                    b.HasOne("Book.Models.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Book.Models.ShoppingCart", b =>
@@ -749,11 +770,14 @@ namespace Book.DataAccess.Migrations
                 {
                     b.HasOne("Book.Models.Company", "Company")
                         .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Book.Models.Product", b =>
+                {
+                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

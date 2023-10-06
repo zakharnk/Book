@@ -15,6 +15,7 @@ namespace Book.DataAccess.Repository
         public IOrderHeaderRepository OrderHeader { get; private set; }
         public IOrderDetailRepository OrderDetail { get; private set; }
         public IRoleRepository Role { get; private set; }
+        public IProductImageRepository ProductImage { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -27,6 +28,7 @@ namespace Book.DataAccess.Repository
             OrderHeader=new OrderHeaderRepository(_db);
             OrderDetail = new OrderDetailRepository(_db);
             Role = new RoleRepository(_db);
+            ProductImage = new ProductImageRepository(_db);
         }
 
         public void Save()

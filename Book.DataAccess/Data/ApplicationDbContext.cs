@@ -17,7 +17,7 @@ namespace Book.DataAccess.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-
+        public DbSet<ProductImage> ProductImages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -64,8 +64,7 @@ namespace Book.DataAccess.Data
                     Price = 20,
                     PriceFor50 = 18,
                     PriceFor100 = 15,
-                    CategoryId = 1,
-                    ImageUrl = ""
+                    CategoryId = 1
                 },
 
                 new Product
@@ -79,8 +78,7 @@ namespace Book.DataAccess.Data
                     Price = 5,
                     PriceFor50 = 4,
                     PriceFor100 = 3,
-                    CategoryId = 1,
-                    ImageUrl = ""
+                    CategoryId = 1
                 },
 
                 new Product
@@ -94,8 +92,7 @@ namespace Book.DataAccess.Data
                     Price = 6,
                     PriceFor50 = 5,
                     PriceFor100 = 4,
-                    CategoryId = 3,
-                    ImageUrl = ""
+                    CategoryId = 3
                 },
 
                  new Product
@@ -109,8 +106,7 @@ namespace Book.DataAccess.Data
                      Price = 13,
                      PriceFor50 = 12,
                      PriceFor100 = 11,
-                     CategoryId = 1,
-                     ImageUrl = ""
+                     CategoryId = 1
                  },
 
                   new Product
@@ -124,8 +120,7 @@ namespace Book.DataAccess.Data
                       Price = 21,
                       PriceFor50 = 20,
                       PriceFor100 = 18,
-                      CategoryId = 2,
-                      ImageUrl = ""
+                      CategoryId = 2
                   },
 
                   new Product
@@ -139,8 +134,7 @@ namespace Book.DataAccess.Data
                       Price = 12,
                       PriceFor50 = 11,
                       PriceFor100 = 10,
-                      CategoryId = 1,
-                      ImageUrl = ""
+                      CategoryId = 1
                   });
         }
     }
